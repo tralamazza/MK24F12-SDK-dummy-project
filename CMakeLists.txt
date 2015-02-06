@@ -5,16 +5,21 @@ project("master firmware test")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Og -g -std=gnu11 -Wall -Werror")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Og -g -std=c++11 -Wall -Werror")
 
-get_filename_component(KSDK_ROOT "../MK24F12-SDK" ABSOLUTE)
+# set(KSDK_VERSION "1.0.0")
+set(KSDK_VERSION "1.1.0")
 
-set(KSDK_DRIVER_MODULES dspi edma flextimer gpio i2c lptmr pit rtc uart)
+get_filename_component(KSDK_ROOT "~/Freescale/KSDK_${KSDK_VERSION}" ABSOLUTE)
 
-include(${PROJECT_SOURCE_DIR}/cmake/ksdk.cmake)
+get_filename_component(KSDK_LINKER_SCRIPT "linker/KSDK_${KSDK_VERSION}/MK24FN1M0xxx12_flash.ld" ABSOLUTE)
+
+set(KSDK_DRIVER_MODULES dspi edma flextimer gpio lptmr pit rtc uart)
+
+include("${PROJECT_SOURCE_DIR}/cmake/ksdk_${KSDK_VERSION}.cmake")
 
 add_library(ksdk STATIC ${KSDK_SOURCES})
-target_include_directories(ksdk PUBLIC ${KSDK_INCLUDES})
+target_include_directories(ksdk PUBLIC "include" ${KSDK_INCLUDES})
 add_definitions(${KSDK_DEFINITIONS})
-include_directories(${KSDK_INCLUDES})
+include_directories("include" ${KSDK_INCLUDES})
 
 add_executable(master main.c)
 add_definitions(${KSDK_DEFINITIONS})
@@ -26,8 +31,8 @@ set(CMAKE_EXECUTABLE_SUFFIX ".elf")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--whole-archive libksdk.a -Wl,--no-whole-archive")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-T,${KSDK_LINKER_SCRIPT}")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Xlinker -Map=${PROJECT_BINARY_DIR}/master.map")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Xlinker --defsym=__heap_size__=0x8000")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Xlinker --defsym=__stack_size__=0x4000")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Xlinker --defsym=__heap_size__=0x30000")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Xlinker --defsym=__stack_size__=0x2000")
 add_custom_command(TARGET master POST_BUILD COMMAND ${CMAKE_OBJCOPY} -Oihex ${PROJECT_BINARY_DIR}/master.elf ${PROJECT_BINARY_DIR}/master.hex)
 add_custom_command(TARGET master POST_BUILD COMMAND ${CMAKE_OBJCOPY} -Obinary ${PROJECT_BINARY_DIR}/master.elf ${PROJECT_BINARY_DIR}/master.bin)
 
