@@ -18,7 +18,7 @@ include("${PROJECT_SOURCE_DIR}/cmake/ksdk_${KSDK_VERSION}.cmake")
 
 add_library(ksdk STATIC ${KSDK_SOURCES})
 target_include_directories(ksdk PUBLIC "include" ${KSDK_INCLUDES})
-add_definitions(${KSDK_DEFINITIONS})
+add_definitions(${KSDK_DEFINITIONS} -DCLOCK_SETUP=0)
 include_directories("include" ${KSDK_INCLUDES})
 
 add_executable(master main.c)
