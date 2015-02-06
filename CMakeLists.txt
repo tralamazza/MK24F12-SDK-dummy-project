@@ -2,10 +2,12 @@ cmake_minimum_required(VERSION 3.0)
 
 project("master firmware test")
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Os -g -std=gnu11 -Wall -Werror -ffunction-sections -fdata-sections")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os -g -std=c++11 -Wall -Werror -ffunction-sections -fdata-sections")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Og -g -std=gnu11 -Wall -Werror")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Og -g -std=c++11 -Wall -Werror")
 
 get_filename_component(KSDK_ROOT "../MK24F12-SDK" ABSOLUTE)
+
+set(KSDK_DRIVER_MODULES dspi edma flextimer gpio i2c lptmr pit rtc uart)
 
 include(${PROJECT_SOURCE_DIR}/cmake/ksdk.cmake)
 
@@ -20,6 +22,8 @@ target_link_libraries(master ksdk)
 
 set(CMAKE_EXECUTABLE_SUFFIX ".elf")
 
+# we need "--whole-archive" here to import the IRQ handlers
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--whole-archive libksdk.a -Wl,--no-whole-archive")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-T,${KSDK_LINKER_SCRIPT}")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Xlinker -Map=${PROJECT_BINARY_DIR}/master.map")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Xlinker --defsym=__heap_size__=0x8000")
@@ -27,6 +31,7 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Xlinker --defsym=__stack_
 add_custom_command(TARGET master POST_BUILD COMMAND ${CMAKE_OBJCOPY} -Oihex ${PROJECT_BINARY_DIR}/master.elf ${PROJECT_BINARY_DIR}/master.hex)
 add_custom_command(TARGET master POST_BUILD COMMAND ${CMAKE_OBJCOPY} -Obinary ${PROJECT_BINARY_DIR}/master.elf ${PROJECT_BINARY_DIR}/master.bin)
 
-add_custom_target(flash dfu-util -d 15a2:1000 -D ${PROJECT_BINARY_DIR}/master.bin)
-add_custom_target(gdbserver JLinkGDBServer -if SWD)
-add_custom_target(gdb ${TRIPLET}-gdb master.elf -ex 'target extended-remote :2331')
+add_custom_target(flash dfu-util -d 15a2:1000 -D ${PROJECT_BINARY_DIR}/master.bin
+	DEPENDS master)
+add_custom_target(gdbserver JLinkGDBServer -if JTAG -device MK24FN1M0xxx12 -speed auto)
+add_custom_target(gdb ${TRIPLET}-gdb master.elf -ex 'target remote :2331')
