@@ -33,7 +33,10 @@ endif()
 set(KSDK_FREERTOS_ROOT ${KSDK_ROOT}/rtos/FreeRTOS)
 
 set(KSDK_SOURCES_FREERTOS
+	${KSDK_FREERTOS_ROOT}/src/heap_1.c
 	${KSDK_FREERTOS_ROOT}/src/heap_2.c
+	${KSDK_FREERTOS_ROOT}/src/heap_3.c
+	${KSDK_FREERTOS_ROOT}/src/heap_4.c
 	${KSDK_FREERTOS_ROOT}/src/croutine.c
 	${KSDK_FREERTOS_ROOT}/src/event_groups.c
 	${KSDK_FREERTOS_ROOT}/src/list.c
