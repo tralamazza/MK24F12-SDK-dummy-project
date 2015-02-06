@@ -97,9 +97,13 @@ endif()
 
 # drivers
 foreach(comp ${KSDK_DRIVER_MODULES})
+	file(GLOB KSDK_SOURCES_DRIVER_${comp}_ ${KSDK_ROOT}/platform/drivers/${comp}/*.c)
 	file(GLOB KSDK_SOURCES_DRIVER_${comp}_src ${KSDK_ROOT}/platform/drivers/${comp}/src/*.c)
 	file(GLOB KSDK_SOURCES_DRIVER_${comp}_common ${KSDK_ROOT}/platform/drivers/${comp}/common/*.c)
-	list(APPEND KSDK_SOURCES ${KSDK_SOURCES_DRIVER_${comp}_src} ${KSDK_SOURCES_DRIVER_${comp}_common})
+	list(APPEND KSDK_SOURCES
+		${KSDK_SOURCES_DRIVER_${comp}_}
+		${KSDK_SOURCES_DRIVER_${comp}_src}
+		${KSDK_SOURCES_DRIVER_${comp}_common})
 	list(APPEND KSDK_INCLUDES ${KSDK_ROOT}/platform/drivers/${comp})
 	list(APPEND KSDK_INCLUDES ${KSDK_ROOT}/platform/drivers/${comp}/common)
 endforeach()
