@@ -12,6 +12,9 @@ CMAKE_FORCE_CXX_COMPILER(${TRIPLET}-g++ GNU)
 set(CMAKE_OBJCOPY ${TRIPLET}-objcopy CACHE INTERNAL "objcopy tool")
 set(CMAKE_OBJDUMP ${TRIPLET}-objdump CACHE INTERNAL "objdump tool")
 
+set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb")
+set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} -mabi=aapcs -ffunction-sections -fdata-sections -fno-builtin -Wno-main -fplan9-extensions")
+
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mabi=aapcs -ffunction-sections -fdata-sections -fno-builtin -Wno-main -fplan9-extensions")
 
