@@ -2,8 +2,9 @@
 
 ## Requirements
 
-	* Freescale Kinetis SDK 1.1.0
-	* ARM GCC Embedded
+* Freescale Kinetis SDK 1.1.0
+* ARM GCC Embedded
+* JLink SEGGER (required for debugging) 
 
 ## Building
 
